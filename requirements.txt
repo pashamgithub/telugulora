@@ -1,0 +1,8 @@
+# Local / lightweight dependencies (data prep, analysis).
+# Training deps (axolotl, bitsandbytes) and eval deps (vllm) are installed
+# in the Kaggle environment. Versions get pinned in Stage 2.
+datasets
+huggingface_hub
+transformers
+sacrebleu
+python-dotenv

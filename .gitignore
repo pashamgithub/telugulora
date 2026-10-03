@@ -1,0 +1,40 @@
+# --- Secrets ---
+.env
+*.token
+.huggingface/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# --- Notebooks ---
+.ipynb_checkpoints/
+
+# --- Model weights & training artifacts (live on HF Hub) ---
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+*.ckpt
+outputs/
+checkpoints/
+merged/
+last_run_prepared/
+
+# --- Data (lives on HF Hub) ---
+data/
+*.parquet
+*.arrow
+
+# --- Tracking / caches ---
+wandb/
+.cache/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
