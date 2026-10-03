@@ -4,5 +4,6 @@
 datasets
 huggingface_hub
 transformers
+jinja2
 sacrebleu
 python-dotenv

@@ -81,4 +81,6 @@ Verify config keys against the **installed** Axolotl version's schema.
   `/tmp/axo-venv` (Py 3.12) on Kaggle; launch via `PATH=/tmp/axo-venv/bin:$PATH` and
   `-- --num_processes 1`. **Done** — versions table + gotchas in docs/experiment.md
   (torch 2.13.0+cu132, transformers 5.17.0, peft 0.21.0, bnb 0.50.2, driver 580).
-- Next: user says "Start Stage 3".
+- Stage 3: script done + dry run OK (37,457 pairs; train 36,957 / val 500). Data =
+  BPCC-H Wiki+Daily. Prompt lives in `scripts/prompt.py` (reuse in evaluate.py).
+  Pending user: `--push` to private `thirumalreddy0172/telugu-en-te-bpcc`, commit.

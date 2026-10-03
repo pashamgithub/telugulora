@@ -41,6 +41,30 @@ Kaggle's own Python is 3.13.15 (not used for training). Checked 2026-10-03.
 - Axolotl reports `bf16: true` capability on T4 (emulated) — ignore; we stay on fp16.
 - Warning to act on: pre-tokenise with `axolotl preprocess cfg.yml` before real runs.
 
+## Data (Stage 3)
+Built by `scripts/prepare_data.py` → private HF dataset `thirumalreddy0172/telugu-en-te-bpcc`.
+
+- Source: BPCC-Human **Wiki + Daily**, en→te (human-translated, CC-BY-4.0). Chosen over
+  Samanantar (web-mined, noisy, CC-BY-NC) — quality matters more than size on a T4 budget.
+- Prompt (shared with eval via `scripts/prompt.py`), no system message:
+  `Translate the following English text to Telugu.\n\n{en}`
+
+| Step | Pairs |
+|---|---|
+| Input (wiki 29,726 + daily 8,512) | 38,238 |
+| − duplicate English source (kept first) | −747 |
+| − target < 50% Telugu script (half-translated rows) | −25 |
+| − length ratio te/en outside 0.3–3.0 | −7 |
+| − FLORES+ dev/devtest overlap (exact or shared 8-gram) | **−2** |
+| **Kept** | **37,457** |
+| train / validation (seed 42) | 36,957 / 500 |
+
+Leakage: 0 exact matches, but 2 near-copies of FLORES+ sentences (Sikhism; Sundarbans
+tigers) — caught only by the 8-gram check.
+
+Token length (Qwen3 tokenizer, full chat incl. template): p50 173 · p95 306 · p99 368 ·
+max 1031. >512 tokens: 34 (0.09%). Telugu is token-expensive (~17-word sentence ≈ 170 tokens).
+
 ## Controlled variables
 _Filled in Stages 5–6._
 
