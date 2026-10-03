@@ -32,7 +32,8 @@ generation settings. Only quantization-related settings differ. Optimizer differ
 
 ## Stack (do not switch without user's request)
 Transformers, PEFT, **Axolotl** (training, YAML-driven), bitsandbytes, HF Datasets,
-HF Hub (datasets/adapters/merged models), Weights & Biases (tracking), **vLLM** (eval
+HF Hub (datasets/adapters/merged models), **TensorBoard** (tracking; logs pushed to HF Hub
+with adapters — W&B dropped by user's choice, can switch back via config), **vLLM** (eval
 inference), **sacrebleu** (chrF++ with word_order=2, BLEU). Kaggle T4 for training;
 AWS only at the end. Alternatives (mention only): LLaMA-Factory, Unsloth.
 
@@ -60,7 +61,7 @@ Verify config keys against the **installed** Axolotl version's schema.
 | 4 | Baseline zero-shot eval with vLLM + sacrebleu (eval built before training) | scripts/evaluate.py, results/baseline/ |
 | 5 | LoRA config + short run; verify label masking & memory | configs/qwen3-4b-lora.yml |
 | 6 | QLoRA config + short run; `diff` configs shows only intended changes | configs/qwen3-4b-qlora.yml |
-| 7 | Full training runs; adapters to HF Hub; W&B runs | notebook, docs/experiment.md |
+| 7 | Full training runs; adapters + TensorBoard logs to HF Hub | notebook, docs/experiment.md |
 | 8 | Evaluate adapters with unchanged evaluate.py | results/lora/, results/qlora/ |
 | 9 | Analysis: table (chrF++, BLEU, peak VRAM, time, params), examples, significance | scripts/compare_results.py |
 | 10 | Merge into fp16 base, re-eval, publish merged models + model cards | results/merged/ |
@@ -69,8 +70,11 @@ Verify config keys against the **installed** Axolotl version's schema.
 
 ## Current status
 <!-- Update this section at the end of every stage. -->
-- Stage 0: **not done** by user yet (needed before Stage 2).
-- Stage 1: skeleton created at `C:\Users\Shivani Reddy\dev\telugu-lora` (outside OneDrive);
-  .gitignore verified. **Pending user:** venv + `pip install -r requirements.txt`,
-  first commit, create GitHub repo `telugu-lora`, push.
+- Stage 0: **done.** HF write token (local `.env` + Kaggle Secret `HF_TOKEN`),
+  FLORES+ access, Kaggle T4 verified. W&B skipped (CoreWeave onboarding loop) →
+  **tracking = TensorBoard**. Peak VRAM and train time are measured explicitly
+  (torch peak-memory counter, trainer runtime), not taken from a dashboard.
+- Stage 1: **done.** Skeleton at `C:\Users\Shivani Reddy\dev\telugu-lora` (outside OneDrive),
+  local venv at `venv/`, first commit pushed to https://github.com/pashamgithub/telugulora
+  (note: GitHub repo name has no hyphen).
 - Next: user says "Start Stage 2".
