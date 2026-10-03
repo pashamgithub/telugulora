@@ -77,4 +77,8 @@ Verify config keys against the **installed** Axolotl version's schema.
 - Stage 1: **done.** Skeleton at `C:\Users\Shivani Reddy\dev\telugu-lora` (outside OneDrive),
   local venv at `venv/`, first commit pushed to https://github.com/pashamgithub/telugulora
   (note: GitHub repo name has no hyphen).
-- Next: user says "Start Stage 2".
+- Stage 2: **smoke test passed** (2026-10-03). Axolotl 0.20.0 + torch 2.13.0 in uv venv
+  `/tmp/axo-venv` (Py 3.12) on Kaggle; launch via `PATH=/tmp/axo-venv/bin:$PATH` and
+  `-- --num_processes 1`. **Done** — versions table + gotchas in docs/experiment.md
+  (torch 2.13.0+cu132, transformers 5.17.0, peft 0.21.0, bnb 0.50.2, driver 580).
+- Next: user says "Start Stage 3".
