@@ -68,6 +68,9 @@ eval_strategy: steps
 eval_steps: 250
 save_strategy: steps
 save_steps: 250
+save_total_limit: 2              # keep Kaggle's 20 GB output small
+hub_model_id: thirumalreddy0172/qwen3-4b-telugu-lora   # Axolotl forces private
+hub_strategy: checkpoint         # also uploads last-checkpoint/ -> resumable
 logging_steps: 10
 use_tensorboard: true
 output_dir: /kaggle/working/outputs/lora

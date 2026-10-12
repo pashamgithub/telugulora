@@ -102,4 +102,8 @@ Verify config keys against the **installed** Axolotl version's schema.
   short run peak 6.71 GiB (vs LoRA 11.73), ~10.4 s/step (vs 9.3), eval loss 0.524 → 0.387
   (LoRA 0.482 → 0.366). Full 1-epoch estimates: LoRA ≈ 6.3 h, QLoRA ≈ 7.0 h.
   Install cells now use `uv venv --allow-existing` (safe to rerun).
-- Next: user says "Start Stage 7" (full runs; push adapters + TensorBoard logs to HF Hub).
+- Stage 7: both configs gained `save_total_limit: 2`, `hub_model_id:
+  thirumalreddy0172/qwen3-4b-telugu-{lora,qlora}`, `hub_strategy: checkpoint` (Axolotl forces
+  private repos; pushes adapter + `runs/` + `last-checkpoint/` every 250 steps). Epochs = 1 (final).
+  New unattended notebook `notebooks/train_full_kaggle.ipynb` (params `RUN`, `RESUME`), run as
+  Kaggle commit. Pending: LoRA run, then QLoRA run; fill Runs table in docs/experiment.md.

@@ -158,5 +158,26 @@ Whether it closes is what Stages 7–8 measure.
 **Full-run estimates (1 epoch, 2,308 steps + ~9 evals):** LoRA ≈ 6.3 h · QLoRA ≈ 7.0 h →
 both fit Kaggle's 12 h session; ≈ 13.3 h of the ~30 h weekly GPU quota.
 
-## Runs
-_Filled in Stage 7._
+## Runs (Stage 7)
+Notebook: `notebooks/train_full_kaggle.ipynb`, run as a Kaggle **commit** ("Save & Run All"),
+one T4, `RUN = "lora"` then `RUN = "qlora"`.
+
+**Epochs = 1 (final).** Reasons: one epoch is ~2,308 optimizer steps over 36,923 pairs, which
+already gives a large step count for a 33M-param adapter. In the short runs, eval loss dropped fast
+(0.48 → 0.37 in 30 steps), so a second pass over high-quality data mostly risks overfitting.
+1 epoch fits a single 12 h Kaggle session for both runs (≈ 6.3 h / 7.0 h) and costs ≈ 13 h of the
+weekly GPU quota instead of ≈ 27 h for 2 epochs.
+
+Hub (private, forced by Axolotl): `thirumalreddy0172/qwen3-4b-telugu-lora` and `…-qlora`.
+`hub_strategy: checkpoint` pushes the adapter + TensorBoard `runs/` every 250 steps and a full
+`last-checkpoint/` (adapter + optimizer + scheduler state) for resuming a killed run.
+
+| | LoRA fp16 | QLoRA NF4 |
+|---|---|---|
+| Kaggle version / date | _ | _ |
+| Steps completed | _ / 2,308 | _ / 2,308 |
+| `train_runtime` | _ | _ |
+| Peak `memory/max_allocated` (max over run) | _ | _ |
+| Final train loss | _ | _ |
+| Final eval loss (500 val) | _ | _ |
+| Resumed? | _ | _ |
