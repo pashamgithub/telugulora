@@ -81,11 +81,13 @@ Verify config keys against the **installed** Axolotl version's schema.
   `/tmp/axo-venv` (Py 3.12) on Kaggle; launch via `PATH=/tmp/axo-venv/bin:$PATH` and
   `-- --num_processes 1`. **Done** — versions table + gotchas in docs/experiment.md
   (torch 2.13.0+cu132, transformers 5.17.0, peft 0.21.0, bnb 0.50.2, driver 580).
-- Stage 3: script done + dry run OK (37,457 pairs; train 36,957 / val 500). Data =
-  BPCC-H Wiki+Daily. Prompt lives in `scripts/prompt.py` (reuse in evaluate.py).
-  Pending user: `--push` to private `thirumalreddy0172/telugu-en-te-bpcc` (not on Hub yet
-  as of Stage 4 start); `scripts/prepare_data.py` + `prompt.py` were left out of the commit.
+- Stage 3: **done.** 37,457 pairs (train 36,957 / val 500) from BPCC-H Wiki+Daily, pushed
+  to private HF dataset `thirumalreddy0172/telugu-en-te-bpcc`; scripts committed (358e6ce).
+  Prompt lives in `scripts/prompt.py` (reused by evaluate.py).
 - Stage 4: `scripts/evaluate.py` + `notebooks/eval_kaggle.ipynb` written. vLLM 0.30.0 (torch
   2.13.0) in separate uv venv `/tmp/vllm-venv`; T4 needs `attention_backend="TRITON_ATTN"`.
   Metrics: chrF++ (word_order=2) + spBLEU (flores200 tokenizer). Kaggle clones the public
-  GitHub repo, so scripts must be pushed before running. Pending: user runs baseline.
+  GitHub repo, so scripts must be pushed before running. **Baseline done:** chrF++ 27.88,
+  spBLEU 11.0, 138/1012 truncated (repetition loops), 363 s. Details in docs/experiment.md.
+  Pending user: unzip results into `results/baseline/` and commit.
+- Next: user says "Start Stage 5".

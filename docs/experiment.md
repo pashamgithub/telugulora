@@ -65,6 +65,28 @@ tigers) — caught only by the 8-gram check.
 Token length (Qwen3 tokenizer, full chat incl. template): p50 173 · p95 306 · p99 368 ·
 max 1031. >512 tokens: 34 (0.09%). Telugu is token-expensive (~17-word sentence ≈ 170 tokens).
 
+## Evaluation setup & baseline (Stage 4)
+`scripts/evaluate.py` — vLLM 0.30.0 (fp16, `TRITON_ATTN` on T4), greedy, max 512 new
+tokens, same prompt as training. FLORES+ devtest eng_Latn → tel_Telu, 1012 sentences.
+
+| System | chrF++ | spBLEU | Truncated (hit 512) | Gen time (1 T4) |
+|---|---|---|---|---|
+| Base Qwen3-4B-Instruct-2507, zero-shot | **27.88** | **11.0** | 138 / 1012 (13.6%) | 363 s |
+
+Signatures: chrF++ `nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.6.0` ·
+spBLEU `nrefs:1|case:mixed|eff:no|tok:flores200|smooth:exp|version:2.6.0`
+
+Observations (base model):
+- Gist usually right, but transliterates English words ("mice" → మీస్), mistranslates
+  facts (Monday → మంగళవారం/Tuesday), invents words.
+- Greedy **repetition loops** (e.g. devtest id 2 repeats "సంబంధించిన వారికి" to the limit) —
+  the main reason for the 138 truncations: **124 / 1012 outputs are heavy repetition
+  loops** (unique-4-gram ratio < 0.5). 0 empty outputs, 0 outputs not in Telugu script. Not "fixed" with a repetition penalty: decoding
+  must stay identical across systems, and loop rate is itself a finding.
+- **Reference noise in FLORES+ tel_Telu:** CSV-escaping artifacts (`"""""""…`), a duplicated
+  phrase (id 1), an incomplete translation (id 3). Same refs for every system, so the
+  comparison stays fair; note as a limitation in Stage 9. References are not edited.
+
 ## Controlled variables
 _Filled in Stages 5–6._
 

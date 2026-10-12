@@ -1,0 +1,22 @@
+{
+  "name": "baseline",
+  "model": "Qwen/Qwen3-4B-Instruct-2507",
+  "adapter": null,
+  "split": "devtest",
+  "n_sentences": 1012,
+  "chrf++": 27.88,
+  "spbleu": 11.0,
+  "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:2|space:no|version:2.6.0",
+  "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:flores200|smooth:exp|version:2.6.0",
+  "truncated_outputs": 138,
+  "generation_seconds": 362.9,
+  "prompt_template": "Translate the following English text to Telugu.\n\n{en}",
+  "decoding": {
+    "temperature": 0.0,
+    "max_new_tokens": 512
+  },
+  "versions": {
+    "vllm": "0.30.0",
+    "sacrebleu": "2.6.0"
+  }
+}
