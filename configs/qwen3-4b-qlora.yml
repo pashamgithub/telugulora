@@ -1,0 +1,78 @@
+# Stage 6: QLoRA on a 4-bit NF4 base — Qwen3-4B-Instruct-2507, English -> Telugu.
+# Axolotl 0.20.0 on one Kaggle T4. Every value here is shared with the QLoRA config
+# (Stage 6) except the "QUANTIZATION" block — keep it that way for a fair comparison.
+# Check with: git diff --no-index configs/qwen3-4b-lora.yml configs/qwen3-4b-qlora.yml
+
+base_model: Qwen/Qwen3-4B-Instruct-2507
+
+# --- QUANTIZATION (the only block that differs in qwen3-4b-qlora.yml) ---
+adapter: qlora
+load_in_8bit: false
+load_in_4bit: true
+nf4_backend: bitsandbytes
+bnb_config_kwargs:               # Axolotl's defaults, pinned so the method is explicit
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: float16  # T4: no bf16
+
+# --- LoRA ---
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_target_linear: true        # q,k,v,o,gate,up,down projections
+# Axolotl auto-enables these fused kernels; pinned explicitly so both runs match.
+lora_mlp_kernel: true
+lora_qkv_kernel: true
+lora_o_kernel: true
+lora_embedding_kernel: false    # embeddings are not LoRA targets
+
+# --- Data (private HF dataset from Stage 3; HF_TOKEN must be set) ---
+chat_template: tokenizer_default
+datasets:
+  - path: thirumalreddy0172/telugu-en-te-bpcc
+    split: train
+    type: chat_template
+    field_messages: messages
+    roles_to_train: ["assistant"]   # loss only on the Telugu reply
+    train_on_eos: turn              # learn to emit <|im_end|> (i.e. stop)
+test_datasets:
+  - path: thirumalreddy0172/telugu-en-te-bpcc
+    split: validation
+    type: chat_template
+    field_messages: messages
+    roles_to_train: ["assistant"]
+    train_on_eos: turn
+dataset_prepared_path: /kaggle/working/last_run_prepared
+train_on_inputs: false
+sequence_len: 512                 # covers 99.9% of examples (Stage 3 stats)
+sample_packing: false             # SDPA on T4 can't isolate packed samples
+
+# --- T4 constraints ---
+fp16: true
+bf16: false
+tf32: false
+attn_implementation: sdpa
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: true
+
+# --- Optimisation (effective batch = 4 x 4 = 16) ---
+micro_batch_size: 4
+gradient_accumulation_steps: 4
+num_epochs: 1                     # final value decided in Stage 7 from measured speed
+optimizer: adamw_torch_fused
+learning_rate: 0.0002
+lr_scheduler: cosine
+warmup_ratio: 0.05
+weight_decay: 0.0
+max_grad_norm: 1.0
+seed: 42
+
+# --- Eval, checkpoints, logging ---
+eval_strategy: steps
+eval_steps: 250
+save_strategy: steps
+save_steps: 250
+logging_steps: 10
+use_tensorboard: true
+output_dir: /kaggle/working/outputs/qlora

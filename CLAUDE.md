@@ -95,4 +95,7 @@ Verify config keys against the **installed** Axolotl version's schema.
   Optimizer: `adamw_torch_fused` for BOTH runs (removes confound). **Done (2026-10-12):**
   masking verified; peak 11.73 GiB alloc / 12.57 reserved; eval loss 0.482 → 0.366 in 30 steps;
   ~9.3 s/step → 1 epoch (2,308 steps) ≈ 6.3 h. Results in docs/experiment.md.
-- Next: user says "Start Stage 6" (QLoRA config; `diff` must show only the quantization block).
+- Stage 6: `configs/qwen3-4b-qlora.yml` = LoRA config + quantization block (`adapter: qlora`,
+  `load_in_4bit: true`, `nf4_backend: bitsandbytes`, `bnb_config_kwargs` nf4 / double quant /
+  compute float16) + `output_dir`. `git diff --no-index` verified: nothing else differs.
+  Same optimizer (adamw_torch_fused). Notebook sections 12–13. Pending: user's short run.

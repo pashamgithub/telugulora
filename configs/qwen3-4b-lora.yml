@@ -1,6 +1,7 @@
 # Stage 5: LoRA on the fp16 base — Qwen3-4B-Instruct-2507, English -> Telugu.
 # Axolotl 0.20.0 on one Kaggle T4. Every value here is shared with the QLoRA config
 # (Stage 6) except the "QUANTIZATION" block — keep it that way for a fair comparison.
+# Check with: git diff --no-index configs/qwen3-4b-lora.yml configs/qwen3-4b-qlora.yml
 
 base_model: Qwen/Qwen3-4B-Instruct-2507
 
