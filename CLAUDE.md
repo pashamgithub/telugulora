@@ -89,5 +89,7 @@ Verify config keys against the **installed** Axolotl version's schema.
   Metrics: chrF++ (word_order=2) + spBLEU (flores200 tokenizer). Kaggle clones the public
   GitHub repo, so scripts must be pushed before running. **Baseline done:** chrF++ 27.88,
   spBLEU 11.0, 138/1012 truncated (repetition loops), 363 s. Details in docs/experiment.md.
-  Pending user: unzip results into `results/baseline/` and commit.
-- Next: user says "Start Stage 5".
+  Results committed (722aab4). 124/1012 baseline outputs are repetition loops.
+- Stage 5: `configs/qwen3-4b-lora.yml` + notebook sections 9–11 (clone, `preprocess --debug`
+  masking check, 30-step short run via CLI overrides `--max-steps/--eval-steps/--save-strategy`).
+  Optimizer: `adamw_torch_fused` for BOTH runs (removes confound). Pending: user runs on Kaggle.

@@ -88,7 +88,32 @@ Observations (base model):
   comparison stays fair; note as a limitation in Stage 9. References are not edited.
 
 ## Controlled variables
-_Filled in Stages 5–6._
+Source of truth: `configs/qwen3-4b-lora.yml` (Stage 5). The QLoRA config (Stage 6) may
+differ **only** in the quantization block.
+
+| Variable | Value |
+|---|---|
+| Base model | Qwen/Qwen3-4B-Instruct-2507 |
+| Data | `thirumalreddy0172/telugu-en-te-bpcc` train (36,957) / validation (500) |
+| Loss | assistant turn only (`roles_to_train: [assistant]`, `train_on_eos: turn`) |
+| Sequence length / packing | 512 / off |
+| LoRA | r 16 · alpha 32 · dropout 0.05 · all linear projections |
+| LoRA kernels | mlp/qkv/o on, embedding off (pinned explicitly) |
+| Precision / attention | fp16 · SDPA · gradient checkpointing (reentrant) |
+| Batch | micro 4 × grad-accum 4 = **16** effective |
+| Optimizer | `adamw_torch_fused` — **same for both runs** (see below) |
+| LR schedule | 2e-4 · cosine · warmup 5% · weight decay 0 · grad-clip 1.0 |
+| Seed | 42 |
+| Epochs | 1 (provisional; fixed in Stage 7 from measured throughput) |
+
+**Optimizer confound — resolved by using one optimizer for both.** Paged 8-bit AdamW only
+saves optimizer-state memory, and with LoRA that state is tiny (33M trainable params × 8 bytes
+≈ 0.26 GB in fp32 AdamW). So there's no memory reason for QLoRA to use a different optimizer,
+and using the same one removes the confound. To confirm in Stage 6.
+
+### Stage 5 short run (LoRA, 30 steps)
+- Masking check: _pending_
+- Peak `memory/max_allocated`: _ GiB · `train_runtime`: _ s (_ s/step) · eval loss: _
 
 ## Runs
 _Filled in Stage 7._
