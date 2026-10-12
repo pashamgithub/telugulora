@@ -111,9 +111,27 @@ saves optimizer-state memory, and with LoRA that state is tiny (33M trainable pa
 ≈ 0.26 GB in fp32 AdamW). So there's no memory reason for QLoRA to use a different optimizer,
 and using the same one removes the confound. To confirm in Stage 6.
 
-### Stage 5 short run (LoRA, 30 steps)
-- Masking check: _pending_
-- Peak `memory/max_allocated`: _ GiB · `train_runtime`: _ s (_ s/step) · eval loss: _
+### Stage 5 short run (LoRA fp16, 30 steps) — 2026-10-12
+- Status: **pass** — fits on one T4, no NaN.
+- Peak memory: `max_allocated` **11.73 GiB**, `device_reserved` **12.57 GiB** of 15 GiB
+  → ~2.4 GiB headroom. No need to shrink micro-batch.
+- Eval loss (500 val): **0.4816** at step 0 (base model) → **0.3661** at step 30.
+- Train loss (every 10 steps): 0.430 → 0.377 → 0.396 (noisy at this scale; expected).
+- Speed: 30 steps in ~278 s of pure training ≈ **9.3 s/step** (~230 trainable tok/s);
+  one validation pass ≈ 80–95 s. `train_runtime` 453.5 s includes both evals.
+- Padding: `tokens/total` ≈ 2× `tokens/trainable` — includes prompt tokens *and* batch
+  padding (no packing). Prompt masking itself checked separately via `preprocess --debug`.
+- **Full-run estimate (1 epoch):** 36,957 / 16 = 2,310 steps × 9.3 s ≈ 6.0 h, + 9 evals
+  (~14 min) ≈ **6.3 h** → fits Kaggle's 12 h session limit.
+- **Masking check: pass** (`axolotl preprocess --debug`, 1 example, 208 tokens, 156 trained):
+  every prompt token incl. `<|im_start|>user`, the instruction, the English text,
+  `<|im_end|>` and `<|im_start|>assistant\n` → label **-100**; every Telugu token and the
+  closing `<|im_end|>` (151645) → own id (trained); trailing `\n` → -100.
+  Telugu prints as `�` pieces in the debug log because Qwen's byte-level BPE splits Telugu
+  characters into several byte tokens — display artefact, not corruption (also why Telugu is
+  token-expensive).
+- Axolotl drops the **34** train examples longer than 512 tokens (matches Stage 3 stats) →
+  effective train size **36,923**. Validation: max 433 tokens, none dropped.
 
 ## Runs
 _Filled in Stage 7._
