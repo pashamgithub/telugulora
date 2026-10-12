@@ -98,4 +98,8 @@ Verify config keys against the **installed** Axolotl version's schema.
 - Stage 6: `configs/qwen3-4b-qlora.yml` = LoRA config + quantization block (`adapter: qlora`,
   `load_in_4bit: true`, `nf4_backend: bitsandbytes`, `bnb_config_kwargs` nf4 / double quant /
   compute float16) + `output_dir`. `git diff --no-index` verified: nothing else differs.
-  Same optimizer (adamw_torch_fused). Notebook sections 12–13. Pending: user's short run.
+  Same optimizer (adamw_torch_fused). Notebook sections 12–13. **Done (2026-10-12):** QLoRA
+  short run peak 6.71 GiB (vs LoRA 11.73), ~10.4 s/step (vs 9.3), eval loss 0.524 → 0.387
+  (LoRA 0.482 → 0.366). Full 1-epoch estimates: LoRA ≈ 6.3 h, QLoRA ≈ 7.0 h.
+  Install cells now use `uv venv --allow-existing` (safe to rerun).
+- Next: user says "Start Stage 7" (full runs; push adapters + TensorBoard logs to HF Hub).

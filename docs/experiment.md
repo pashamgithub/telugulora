@@ -133,5 +133,30 @@ and using the same one removes the confound. To confirm in Stage 6.
 - Axolotl drops the **34** train examples longer than 512 tokens (matches Stage 3 stats) →
   effective train size **36,923**. Validation: max 433 tokens, none dropped.
 
+### Stage 6 short run (QLoRA 4-bit NF4, 30 steps) — 2026-10-12
+`git diff --no-index` of the two configs: only the title comment, the quantization block
+(`adapter`, `load_in_4bit`, `nf4_backend`, `bnb_config_kwargs`) and `output_dir` differ.
+Resolved config confirms nf4 + double quant + float16 compute, `adamw_torch_fused`.
+
+| 30-step short run (same data, seed, overrides) | LoRA fp16 | QLoRA NF4 | Δ |
+|---|---|---|---|
+| Peak `max_allocated` | 11.73 GiB | **6.71 GiB** | −5.0 GiB (−43%) |
+| Peak `device_reserved` | 12.57 GiB | **7.57 GiB** | −5.0 GiB |
+| Eval loss at step 0 (base model, before training) | 0.4816 | **0.5240** | +0.042 — cost of 4-bit base |
+| Eval loss at step 30 | 0.3661 | **0.3870** | +0.021 |
+| Pure training time, 30 steps | ~278 s | ~313 s | |
+| Seconds / step | ~9.3 | **~10.4** | +13% slower |
+| Trainable tok/s | ~230 | ~207 | −10% |
+| Trainable params | 33,030,144 | 33,030,144 | identical |
+
+(Step time = from end of step-0 eval to start of step-30 eval, from log timestamps.)
+
+Early read (30 steps only — not a result): QLoRA saves ~43% memory and costs ~13% speed;
+quantizing the base raises its loss, and the gap narrows after training starts (0.042 → 0.021).
+Whether it closes is what Stages 7–8 measure.
+
+**Full-run estimates (1 epoch, 2,308 steps + ~9 evals):** LoRA ≈ 6.3 h · QLoRA ≈ 7.0 h →
+both fit Kaggle's 12 h session; ≈ 13.3 h of the ~30 h weekly GPU quota.
+
 ## Runs
 _Filled in Stage 7._
